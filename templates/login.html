@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - 文件共享</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%81%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="{{ asset_url('style.css') }}">
+    <script>if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');</script>
 </head>
 <body>
     <div class="container">
@@ -13,11 +15,11 @@
             <h1>文件共享系统</h1>
             <p class="subtitle">请登录以继续访问</p>
 
-            {% with messages = get_flashed_messages() %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    <div class="flashes error-state">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
+                    <div class="flashes">
+                    {% for category, message in messages %}
+                        <p class="{{ category }}-state">{{ message }}</p>
                     {% endfor %}
                     </div>
                 {% endif %}

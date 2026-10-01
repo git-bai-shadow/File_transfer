@@ -1,0 +1,15 @@
+# 运行期生成
+__pycache__/
+*.pyc
+.pytest_cache/
+app.log
+app.log.*
+.secret_key
+share_links.json
+thumb_cache/
+
+# 本地工具/环境
+.zcode/
+.zcodeignore
+.workbuddy/
+.shared/

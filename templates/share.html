@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享 - 文件共享</title>
+    <link rel="stylesheet" href="{{ asset_url('style.css') }}">
+    <script src="{{ asset_url('vendor/lucide.min.js') }}"></script>
+    <script>if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');</script>
+</head>
+<body class="share-page">
+    <div class="container">
+        <div class="card elevated">
+            <div class="status-indicator status-online"></div>
+
+            {% if error %}
+                <h1>🔗 链接失效</h1>
+                <p class="subtitle">{{ error }}</p>
+            {% elif is_folder %}
+                <h1>📁 {{ name }}</h1>
+                <p class="subtitle">来自局域网共享的文件夹</p>
+
+                <div class="breadcrumbs share-crumbs">
+                    {% if current_sub %}
+                    <a href="/s/{{ token }}" class="home-btn">根目录</a>
+                    {% for part, sub_path in crumbs %}
+                        / <a href="/s/{{ token }}?sub={{ sub_path | urlencode }}">{{ part }}</a>
+                    {% endfor %}
+                    {% else %}
+                    <span class="home-btn">根目录</span>
+                    {% endif %}
+                </div>
+
+                <div class="share-list">
+                    <table>
+                        <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td class="share-item-name">
+                                {% if item.is_folder %}
+                                    <a href="/s/{{ token }}?sub={{ item.sub | urlencode }}">{{ item.icon }} {{ item.name }}</a>
+                                {% else %}
+                                    <span>{{ item.icon }} {{ item.name }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="share-item-size">{{ item.size }}</td>
+                            <td class="share-item-action">
+                                {% if not item.is_folder %}
+                                <a class="btn btn-small btn-primary" href="/s/{{ token }}/download/{{ item.sub }}">下载</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not items %}
+                        <tr><td class="empty-folder">文件夹为空</td></tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <h1>{{ icon }} {{ name }}</h1>
+                <p class="subtitle">{{ size }} · 修改于 {{ mtime }}</p>
+
+                <div class="preview-media share-preview">
+                    {% if kind == 'video' %}
+                    <video controls preload="metadata" src="/s/{{ token }}/download?inline=1"></video>
+                    {% elif kind == 'audio' %}
+                    <audio controls preload="metadata" src="/s/{{ token }}/download?inline=1"></audio>
+                    {% elif kind == 'image' %}
+                    <img src="/s/{{ token }}/download?inline=1" alt="{{ name }}">
+                    {% endif %}
+                </div>
+
+                <a class="btn btn-primary download-btn share-download" href="/s/{{ token }}/download">
+                    <i data-lucide="download"></i> 下载文件
+                </a>
+            {% endif %}
+
+            <p class="share-footer">局域网文件共享系统</p>
+        </div>
+    </div>
+    <script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

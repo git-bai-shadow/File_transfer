@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ code }} - 文件共享</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%81%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="error-page">
+    <div class="container">
+        <div class="card elevated">
+            <div class="error-icon">{{ '🔍' if code == 404 else '⚠️' }}</div>
+            <h1>{{ message }}</h1>
+            <p class="subtitle error-code">错误代码 {{ code }}</p>
+            <a class="btn btn-primary error-home" href="/">返回主目录</a>
+        </div>
+    </div>
+</body>
+</html>
