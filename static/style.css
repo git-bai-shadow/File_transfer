@@ -1197,6 +1197,11 @@ body.multi-select #file-table td.col-check { display: table-cell; }
 body.multi-select #file-table tbody tr { cursor: default; }
 body.multi-select #file-table tbody tr:hover { background: rgba(255, 255, 255, 0.2); }
 
+/* 操作栏为 fixed 悬浮,滚动区按其实际高度(手机端会折行)预留底部空间,最后一行不被遮挡 */
+body.multi-select .file-browser {
+    padding-bottom: calc(var(--selbar-h, 0px) + 26px + env(safe-area-inset-bottom));
+}
+
 .selection-bar {
     position: fixed;
     bottom: calc(16px + env(safe-area-inset-bottom));

@@ -650,7 +650,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateSelectionBar() {
-        if (!multiSelect) { selectionBar.style.display = 'none'; return; }
+        // 同步操作栏实际高度到 CSS 变量,滚动区据此预留底部空间(手机端操作栏折成两行也能避让)
+        function syncBarHeight() {
+            const visible = multiSelect && selected.size;
+            document.body.style.setProperty('--selbar-h',
+                visible ? selectionBar.offsetHeight + 'px' : '0px');
+        }
+        if (!multiSelect) {
+            selectionBar.style.display = 'none';
+            document.body.style.setProperty('--selbar-h', '0px');
+            return;
+        }
         let files = 0, folders = 0, bytes = 0;
         selected.forEach(function (meta) {
             if (meta.isFolder) folders++;
@@ -661,6 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
             (folders ? '(' + files + ' 文件 ' + folders + ' 文件夹)' : '') +
             (files ? ' · 约 ' + humanBytes(bytes) : '');
         selectionBar.style.display = total ? 'flex' : 'none';
+        syncBarHeight();
     }
 
     function setRowChecked(row, checked) {
@@ -689,6 +700,21 @@ document.addEventListener('DOMContentLoaded', function () {
             updateSelectionBar();
         });
     }
+
+    // 退出多选模式:清空勾选并收起操作栏(下载完成后自动调用)
+    function exitMultiSelect() {
+        multiSelect = false;
+        document.body.classList.remove('multi-select');
+        multiselectBtn.classList.remove('active-toggle');
+        clearSelection();
+    }
+
+    // 窗口尺寸变化(如手机横竖屏切换)时操作栏折行数可能改变,重新测量
+    window.addEventListener('resize', function () {
+        if (multiSelect && selected.size) {
+            document.body.style.setProperty('--selbar-h', selectionBar.offsetHeight + 'px');
+        }
+    });
 
     // 复选框自身点击不冒泡到行,避免双重切换
     document.querySelectorAll('.row-check').forEach(function (cb) {
@@ -731,6 +757,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (folders) showToast(folders + ' 个文件夹无法直接下载,已跳过(可用打包下载)', 'error');
         showToast('开始下载 ' + files.length + ' 个文件', 'success');
+        exitMultiSelect();
         files.forEach(function (path, i) {
             setTimeout(function () {
                 const a = document.createElement('a');
@@ -775,6 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('已开始下载 ' + res.name, 'success');
             btn.disabled = false;
             btn.textContent = original;
+            exitMultiSelect();
         }).catch(function (e) {
             showToast(e.message || '打包失败', 'error');
             btn.disabled = false;
